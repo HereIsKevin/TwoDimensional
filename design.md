@@ -32,3 +32,5 @@
         Move the sprite in the specified direction n pixels
     - *def* place
         Place the sprite in the specified coordinates
+    - *def* bind
+        Create a binding of the sprite to a event
