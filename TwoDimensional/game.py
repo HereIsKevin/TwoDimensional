@@ -1,4 +1,3 @@
-import PIL
 from tkinter import Tk, Canvas
 
 
@@ -23,7 +22,7 @@ class Game(object):
         )
 
         # initialize canvas to fill window
-        self.canvas = Canvas(self.game)
+        self.canvas = Canvas(self.game, highlightthickness=0)
         self.canvas.pack(anchor="center", fill="both", expand=True)
 
     def resizable(self, value):
@@ -41,23 +40,13 @@ class Game(object):
             "+" + str(value[1]) if value[1] > 0 else value[1]}"""
         )
 
-    def play(self):
+    def play(self, mainloop=True):
         self.game.overrideredirect(False)
         self.game.deiconify()
+        self.canvas.focus_set()
+
+        if mainloop:
+            self.game.mainloop()
 
     def terminate(self):
         self.game.destroy()
-
-
-class Image(object):
-    def __init__(self, path):
-        self.image = PIL.Image.open(path)
-
-    def resize(self, height, width, antialias=True):
-        if antialias:
-            self.image = self.image.resize((width, height), PIL.Image.ANTIALIAS)
-        else:
-            self.image = self.image.resize((width, height))
-
-    def to_tkimage(self):
-        return PIL.ImageTk(self.image)
