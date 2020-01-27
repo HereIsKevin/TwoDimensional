@@ -14,14 +14,14 @@ move_right = False
 def move(direction, start):
     exec(f"global {direction}; {direction} = {start}")
 
-game.on(event="<Up>", tag=None, function=lambda *x: move("move_up", True))
-game.on(event="<Down>", tag=None, function=lambda *x: move("move_down", True))
-game.on(event="<Left>", tag=None, function=lambda *x: move("move_left", True))
-game.on(event="<Right>", tag=None, function=lambda *x: move("move_right", True))
-game.on(event="<KeyRelease-Up>", tag=None, function=lambda *x: move("move_up", False))
-game.on(event="<KeyRelease-Down>", tag=None, function=lambda *x: move("move_down", False))
-game.on(event="<KeyRelease-Left>", tag=None, function=lambda *x: move("move_left", False))
-game.on(event="<KeyRelease-Right>", tag=None, function=lambda *x: move("move_right", False))
+game.on(event="<Up>")(lambda *x: move("move_up", True))
+game.on(event="<Down>")(lambda *x: move("move_down", True))
+game.on(event="<Left>")(lambda *x: move("move_left", True))
+game.on(event="<Right>")(lambda *x: move("move_right", True))
+game.on(event="<KeyRelease-Up>")(lambda *x: move("move_up", False))
+game.on(event="<KeyRelease-Down>")(lambda *x: move("move_down", False))
+game.on(event="<KeyRelease-Left>")(lambda *x: move("move_left", False))
+game.on(event="<KeyRelease-Right>")(lambda *x: move("move_right", False))
 
 game.play()
 
