@@ -1,51 +1,108 @@
 from PIL import Image as PILImage
-from PIL import ImageTk
+from PIL import ImageTk as PILImageTk
+
 
 class Sprite(object):
     pass
 
+
 class Image(Sprite):
-    def __init__(self, parent, path, dimensions=(None, None)):
-        self.image = PILImage.open(path)
+    def __init__(self, parent, path, dimensions=[None, None], antialias=True):
+        self._path = path
+        self._image = PILImage.open(self._path)
+        self._antialias = antialias
 
-        if dimensions != (None, None):
-            self.resize(dimensions[0], dimensions[1])
-
-        self.tkimage = self.to_tkimage()
-        self.position = [0, 0]
-        self.tag = None
-        self.parent = parent.canvas
-
-    def resize(self, height, width, antialias=True):
-        if antialias:
-            self.image = self.image.resize((width, height), PILImage.ANTIALIAS)
+        if dimensions[0] == None and dimensions[1] == None:
+            self._dimensions = list(self._image.size)
         else:
-            self.image = self.image.resize((width, height))
+            self._dimensions = list(dimensions)
 
-    def to_tkimage(self):
-        return ImageTk.PhotoImage(self.image)
+            if self._antialias:
+                self._image = self._image.resize(
+                    self._dimensions, PILImage.ANTIALIAS
+                )
+            else:
+                self._image = self._image.resize(
+                    self._dimensions, PILImage.ANTIALIAS
+                )
 
-    def update_image(self):
-        self.tkimage = self.to_tkimage()
+        self._tkimage = PILImageTk.PhotoImage(self._image)
+        self._parent = parent
+        self._tag = None
+        self._position = [0, 0]
+
+    @property
+    def image(self):
+        return self._path
+
+    @image.setter
+    def image(self, value):
+        self._path = value
+        self._image = PILImage.open(self._path)
+        self._dimensions = list(self._image.size)
+        self._tkimage = PILImageTk.PhotoImage(self._image)
+
+    @property
+    def antialias(self):
+        return self._antialias
+
+    @antialias.setter
+    def antialias(self, value):
+        self._antialias = value
+
+    @property
+    def dimensions(self):
+        return self._dimensions
+
+    @dimensions.setter
+    def dimensions(self, value):
+        self._dimensions = value
+
+        if self._antialias:
+            self._image = self._image.resize(
+                self._dimensions, PILImage.ANTIALIAS
+            )
+        else:
+            self._image = self._image.resize(
+                self._dimensions, PILImage.ANTIALIAS
+            )
+
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, value):
+        self._parent = value
+
+    @property
+    def tag(self):
+        return self._tag
+
+    @tag.setter
+    def tag(self, value):
+        self._tag = value
+
+    def position(self):
+        return self._position
 
     def draw(self):
-        self.tag = self.parent.create_image(self.position[0], self.position[1], image=self.tkimage)
-        self.parent.update()
+        self._tag = self._parent._canvas.create_image(
+            *self._position, image=self._tkimage
+        )
+        self._parent.update()
 
-    def destroy(self):
-        self.parent.delete(self.tag)
-        self.parent.update()
+    def destory(self):
+        self._parent._canvas.delete(self._tag)
+        self._parent.update()
 
     def move_to(self, position):
-        self.parent.coords(self.tag, position[0], position[1])
-        self.parent.update()
-        self.position = position
+        self._parent._canvas.coords(self.tag, *position)
+        self._parent.update()
+        self._position = position
 
     def move_by(self, position):
-        self.parent.move(self.tag, position[0], position[1])
-        self.parent.update()
-        self.position[0] += position[0]
-        self.position[1] += position[1]
-
-    def bind(self, key, function):
-        self.parent.bind(key, function)
+        self._parent._canvas.move(self._tag, *position)
+        self._parent.update()
+        self._position[0] += position[0]
+        self._position[1] += position[1]

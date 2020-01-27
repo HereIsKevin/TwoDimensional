@@ -4,49 +4,126 @@ from tkinter import Tk, Canvas
 class Game(object):
     def __init__(
         self,
-        title,
-        geometry=(800, 600),
-        location=(10, 10),
-        resizable=(True, True),
+        name,
+        dimensions=[800, 600],
+        location=[10, 10],
+        resizable=[True, True],
     ):
+        # variables are to be synced with Tk window, DO NOT CHANGE DIRECTLY
+        self._name = name
+        self._dimensions = dimensions
+        self._location = location
+        self._resizable = resizable
+
         # initialize tkinter window
-        self.game = Tk()
-        # self.game.overrideredirect(True)  # probably not needed
-        self.game.withdraw()
-        self.game.title(title)
-        self.game.resizable(*resizable)
-        self.game.geometry(
-            f"""{geometry[0]}x{geometry[1]}{
-            "+" + str(location[0]) if location[0] > 0 else location[0]}{
-            "+" + str(location[1]) if location[1] > 0 else location[1]}"""
+        self._window = Tk()
+        # self._window.overrideredirect(True)  # probably not needed
+        self._window.withdraw()
+        self._window.title(self._name)
+        self._window.geometry(
+            f"""{self._dimensions[0]}x{self._dimensions[1]}{
+            "+" + str(self._location[0])
+            if self._location[0] > 0 else str(self._location[0])}{
+            "+" + str(self._location[1])
+            if self._location[1] > 0 else str(self._location[1])}"""
         )
+        self._window.resizable(*self._resizable)
 
         # initialize canvas to fill window
-        self.canvas = Canvas(self.game, highlightthickness=0)
-        self.canvas.pack(anchor="center", fill="both", expand=True)
+        self._canvas = Canvas(self._window, highlightthickness=0)
+        self._canvas.pack(anchor="center", fill="both", expand=True)
 
+        self.update()
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        try:
+            self._name = str(value)
+            self._window.title(self._name)
+        except ValueError:
+            raise ValueError("name must be a string") from None
+
+        self.update()
+
+    @property
+    def dimensions(self):
+        return self._dimensions
+
+    @dimensions.setter
+    def dimensions(self, value):  # value is width by height
+        if value[0] < 0 or value[1] < 0:
+            raise ValueError("dimensions cannot be negative")
+
+        try:
+            self._dimensions = [int(str(value[0])), int(str(value[1]))]
+            self._window.geometry(
+                f"{self._dimensions[0]}x{self._dimensions[1]}"
+            )
+        except ValueError:
+            raise ValueError("dimensions must be integers") from None
+
+        self.update()
+
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(
+        self, value
+    ):  # value is x by y, +x from left, -x from right, +y from top, -y from bottom
+        try:
+            self._location = [int(str(value[0])), int(str(value[1]))]
+            self._window.geometry(
+                f"""{
+                "+" + str(self._location[0])
+                if self._location[0] > 0 else str(self._location[0])
+                }{
+                "+" + str(self._location[1])
+                if self._location[1] > 0 else str(self._location[1])
+                }"""
+            )
+        except ValueError:
+            raise ValueError("location must be integers") from None
+
+        self.update()
+
+    @property
+    def resizable(self):
+        return self._resizable
+
+    @resizable.setter
     def resizable(self, value):
-        self.game.resizable(*value)
+        try:
+            self._resizable = [bool(value[0]), bool(value[1])]
+            self._window.resizable(*resizable)
+        except ValueError:
+            raise ValueError("resizable must be booleans") from None
 
-    def title(self, value):
-        self.game.title(value)
+        self.update()
 
-    def geometry(self, value):
-        self.game.geometry(f"{value[0]}x{value[1]}")
+    def update(self):
+        self._window.update_idletasks()
+        self._window.update()
 
-    def location(self, value):
-        self.game.geometry(
-            f"""{"+" + str(value[0]) if value[0] > 0 else value[0]}{
-            "+" + str(value[1]) if value[1] > 0 else value[1]}"""
-        )
+    def play(self, loop=False):
+        # self._window.overrideredirect(False)  # probably not needed
+        self._window.deiconify()
+        self._canvas.focus_set()
+        self.update()
 
-    def play(self, mainloop=True):
-        self.game.overrideredirect(False)
-        self.game.deiconify()
-        self.canvas.focus_set()
-
-        if mainloop:
-            self.game.mainloop()
+        if loop:
+            self._window.mainloop()
 
     def terminate(self):
-        self.game.destroy()
+        self._window.destroy()
+
+    def on(self, function, event, tag=None):
+        if tag is None:
+            self._canvas.bind(event, function)
+        else:
+            self._canvas.tag_bind(tag, event, function)
