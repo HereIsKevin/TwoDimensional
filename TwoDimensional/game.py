@@ -33,6 +33,7 @@ class Game(object):
         self._canvas = Canvas(self._window, highlightthickness=0)
         self._canvas.pack(anchor="center", fill="both", expand=True)
 
+        # make sure everything is drawn
         self.update()
 
     @property
@@ -42,7 +43,9 @@ class Game(object):
     @name.setter
     def name(self, value):
         try:
+            # make sure the name can be stringified
             self._name = str(value)
+            # set the window title to name automatically
             self._window.title(self._name)
         except ValueError:
             raise ValueError("name must be a string") from None
@@ -55,11 +58,13 @@ class Game(object):
 
     @dimensions.setter
     def dimensions(self, value):  # value is width by height
-        if value[0] < 0 or value[1] < 0:
+        if value[0] < 0 or value[1] < 0: # make sure value is positive
             raise ValueError("dimensions cannot be negative")
 
         try:
+            # make sure value is an integer
             self._dimensions = [int(str(value[0])), int(str(value[1]))]
+            # set the window dimensions automatically
             self._window.geometry(
                 f"{self._dimensions[0]}x{self._dimensions[1]}"
             )
@@ -75,9 +80,11 @@ class Game(object):
     @location.setter
     def location(
         self, value
-    ):  # value is x by y, +x from left, -x from right, +y from top, -y from bottom
+    ):  # value is +x from left, -x from right, +y from top, -y from bottom
         try:
+            # make sure value is an integer
             self._location = [int(str(value[0])), int(str(value[1]))]
+            # set the window location automatically
             self._window.geometry(
                 f"""{
                 "+" + str(self._location[0])
@@ -99,8 +106,10 @@ class Game(object):
     @resizable.setter
     def resizable(self, value):
         try:
+            # make sure value is a boolean
             self._resizable = [bool(value[0]), bool(value[1])]
-            self._window.resizable(*resizable)
+            # set the window resizable automatically
+            self._window.resizable(*self._resizable)
         except ValueError:
             raise ValueError("resizable must be booleans") from None
 
@@ -122,8 +131,10 @@ class Game(object):
     def terminate(self):
         self._window.destroy()
 
-    def on(self, function, event, tag=None):
-        if tag is None:
-            self._canvas.bind(event, function)
-        else:
-            self._canvas.tag_bind(tag, event, function)
+    def on(self, event, tag=None):
+        def bind_event(function):
+            if tag is None:
+                self._canvas.bind(event, function)
+            else:
+                self._canvas.tag_bind(tag, event, function)
+        return bind_event
