@@ -33,6 +33,27 @@ class Game(object):
         self._canvas = Canvas(self._window, highlightthickness=0)
         self._canvas.pack(anchor="center", fill="both", expand=True)
 
+        # watch window resize
+        @self.on(event="<Configure>")
+        def resize(*args):
+            x = []
+            y = []
+            append_to = "x"
+
+            for item in self._window.geometry():
+                if item == "x":
+                    append_to = "y"
+                    continue
+                elif not item.isdigit():
+                    break
+
+                if append_to == "x":
+                    x.append(item)
+                elif append_to == "y":
+                    y.append(item)
+
+            self._dimensions = [int("".join(x)), int("".join(y))]
+
         # make sure everything is drawn
         self.update()
 
