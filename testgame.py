@@ -29,12 +29,13 @@ while True:
     game.update()
 
     position = ball.position()
+    dimensions = game.dimensions
 
     if move_up and position[1] >= 0:
         ball.move_by([0, -move_by])
-    if move_down and position[1] <= 600:
+    if move_down and position[1] <= dimensions[1]:
         ball.move_by([0, move_by])
     if move_left and position[0] >= 0:
         ball.move_by([-move_by, 0])
-    if move_right and position[0] <= 800:
+    if move_right and position[0] <= dimensions[0]:
         ball.move_by([move_by, 0])
