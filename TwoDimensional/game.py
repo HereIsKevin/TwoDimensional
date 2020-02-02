@@ -79,7 +79,7 @@ class Game(object):
 
     @dimensions.setter
     def dimensions(self, value):  # value is width by height
-        if value[0] < 0 or value[1] < 0: # make sure value is positive
+        if value[0] < 0 or value[1] < 0:  # make sure value is positive
             raise ValueError("dimensions cannot be negative")
 
         try:
@@ -158,4 +158,5 @@ class Game(object):
                 self._canvas.bind(event, function)
             else:
                 self._canvas.tag_bind(tag, event, function)
+
         return bind_event

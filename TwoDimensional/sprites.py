@@ -7,7 +7,7 @@ class Sprite(object):
         self._parent = parent
         self._tag = None
         self._position = [0, 0]
-    
+
     @property
     def parent(self):
         return self._parent
@@ -102,13 +102,12 @@ class Image(Sprite):
             self._image = self._image.resize(
                 self._dimensions, PILImage.ANTIALIAS
             )
-    
+
     def draw(self):
         self._tag = self._parent._canvas.create_image(
             *self._position, image=self._tkimage
         )
         self._parent.update()
-
 
 
 class Line(Sprite):
@@ -117,6 +116,8 @@ class Line(Sprite):
 
         self._coords = coords
         self._fill = fill
-    
+
     def draw(self):
-        self._tag = self._parent._canvas.create_line(*self._coords, fill=self._fill)
+        self._tag = self._parent._canvas.create_line(
+            *self._coords, fill=self._fill
+        )
