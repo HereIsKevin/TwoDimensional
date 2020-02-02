@@ -2,7 +2,7 @@ from TwoDimensional.game import *
 from TwoDimensional.sprites import *
 import time
 
-game = Game("Test Game")
+game = Game("Example Game")
 ball = Image(game, "./ball.png", dimensions=(50, 50))
 move_by = 3
 ball.draw()
@@ -40,5 +40,5 @@ while True:
         ball.move_by([-move_by, 0])
     if move_right and position[0] <= dimensions[0]:
         ball.move_by([move_by, 0])
-    
+
     time.sleep(0.01)
